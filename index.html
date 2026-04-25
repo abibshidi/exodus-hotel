@@ -1,0 +1,38 @@
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Content-Type': 'application/json'
+};
+
+// Staff accounts — edit these to add/remove users
+// role: 'admin' (full access) or 'staff' (view + update stock/rooms, no settings)
+const USERS = [
+  { username: 'admin',    password: 'exodus2024',  name: 'Administrator', role: 'admin'  },
+  { username: 'manager',  password: 'manager123',  name: 'Manager',       role: 'admin'  },
+  { username: 'staff1',   password: 'staff001',    name: 'Staff Member',  role: 'staff'  },
+  { username: 'staff2',   password: 'staff002',    name: 'Staff Member 2',role: 'staff'  },
+  { username: 'bar',      password: 'bar2024',     name: 'Bar Staff',     role: 'staff'  },
+  { username: 'reception',password: 'reception1',  name: 'Reception',     role: 'staff'  },
+];
+
+module.exports = async (req, res) => {
+  Object.entries(CORS).forEach(([k, v]) => res.setHeader(k, v));
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  try {
+    const { username, password } = req.body || {};
+    if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
+
+    const user = USERS.find(u => u.username.toLowerCase() === username.toLowerCase().trim() && u.password === password);
+    if (!user) return res.status(401).json({ error: 'Invalid username or password' });
+
+    // Simple session token (username + timestamp encoded)
+    const token = Buffer.from(`${user.username}:${user.role}:${Date.now()}`).toString('base64');
+    return res.status(200).json({ token, name: user.name, role: user.role, username: user.username });
+
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+};
