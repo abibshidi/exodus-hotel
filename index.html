@@ -141,11 +141,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <div class="login-sub">Hotel &amp; Restaurant · Lagos</div>
     <div style="text-align:left">
       <label class="login-label">Username</label>
-      <input class="login-input" type="text" id="l-user" placeholder="Enter username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+      <input class="login-input" type="text" id="l-user" placeholder="Enter username" autocomplete="username">
       <label class="login-label">Password</label>
-      <input class="login-input" type="password" id="l-pass" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <input class="login-input" type="password" id="l-pass" placeholder="Enter password" autocomplete="current-password">
     </div>
-    <button class="login-btn" id="l-btn" onclick="doLogin()">Sign in</button>
+    <button class="login-btn" id="l-btn">Sign in</button>
     <div class="login-error" id="l-err"></div>
     <div class="login-version">Exodus Hotel Management System</div>
   </div>
@@ -160,7 +160,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
         <div class="user-pill" id="user-pill">—</div>
         <div class="sync-dot" id="sync-dot"></div>
         <span class="sync-txt" id="sync-txt">Connecting...</span>
-        <button class="logout-btn" onclick="doLogout()">Sign out</button>
+        <button class="logout-btn" id="logout-btn">Sign out</button>
       </div>
     </div>
     <div class="tabs">
@@ -230,8 +230,16 @@ function showApp() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = sessionStorage.getItem('exodus_user');
-  if (saved) { currentUser = JSON.parse(saved); showApp(); }
+  // Wire up login
+  document.getElementById('l-btn').addEventListener('click', doLogin);
+  document.getElementById('l-user').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  document.getElementById('l-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  document.getElementById('logout-btn').addEventListener('click', doLogout);
+  // Check saved session
+  try {
+    const saved = sessionStorage.getItem('exodus_user');
+    if (saved) { currentUser = JSON.parse(saved); showApp(); }
+  } catch(e) {}
 });
 
 // ─── SUPABASE DIRECT REST ────────────────────────────────────────
