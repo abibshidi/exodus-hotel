@@ -226,15 +226,20 @@ function showApp() {
   document.getElementById('app').style.display = 'block';
   const pill = document.getElementById('user-pill');
   pill.innerHTML = `<span>${currentUser.name}</span> <span class="role-badge ${currentUser.role==='admin'?'role-admin':'role-staff'}">${currentUser.role}</span>`;
+  // Wire logout now that the button is visible
+  const loBtn = document.getElementById('logout-btn');
+  if (loBtn) { loBtn.onclick = doLogout; }
   loadAll();
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Wire up login
-  document.getElementById('l-btn').addEventListener('click', doLogin);
-  document.getElementById('l-user').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-  document.getElementById('l-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-  document.getElementById('logout-btn').addEventListener('click', doLogout);
+  // Wire login button - use both onclick and addEventListener for maximum compatibility
+  const loginBtn = document.getElementById('l-btn');
+  if (loginBtn) { loginBtn.onclick = doLogin; loginBtn.addEventListener('click', doLogin); }
+  const userInput = document.getElementById('l-user');
+  if (userInput) userInput.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  const passInput = document.getElementById('l-pass');
+  if (passInput) passInput.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
   // Check saved session
   try {
     const saved = sessionStorage.getItem('exodus_user');
