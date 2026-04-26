@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exodus Hotel & Restaurant</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#C9A84C;--gold-light:#E8C97A;--gold-dim:#8A6E2F;--dark:#1A1710;--dark2:#242017;--dark3:#2E2A1E;--cream:#F5EDD8;--cream2:#DDD0B0;--cream3:#A89870;--green:#6DBF7A;--red:#E07070;--blue:#7EB8E8}
+html,body{min-height:100vh;background:#1A1710;font-family:'Jost',sans-serif;color:var(--cream)}
+
+/* ── LOGIN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1A1710;padding:20px}
+.login-box{background:#242017;border:1px solid var(--gold-dim);border-top:3px solid var(--gold);border-radius:10px;padding:40px 36px;width:100%;max-width:380px;text-align:center}
+.login-logo{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;color:var(--gold);letter-spacing:4px;text-transform:uppercase}
+.login-sub{font-size:10px;color:var(--cream3);letter-spacing:4px;text-transform:uppercase;margin-top:4px;margin-bottom:32px}
+.login-label{display:block;text-align:left;font-size:10px;color:var(--cream3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.login-input{width:100%;padding:11px 14px;background:#1A1710;border:1px solid #38321E;border-radius:4px;color:var(--cream);font-size:13px;font-family:'Jost',sans-serif;margin-bottom:16px;transition:border-color .2s}
+.login-input:focus{outline:none;border-color:var(--gold-dim)}
+.login-btn{width:100%;padding:13px;background:var(--gold);color:#1A1710;border:none;border-radius:4px;font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Jost',sans-serif;transition:background .15s;margin-top:4px}
+.login-btn:hover{background:var(--gold-light)}
+.login-btn:disabled{opacity:.5;cursor:not-allowed}
+.login-error{color:var(--red);font-size:12px;margin-top:12px;min-height:18px}
+.login-version{font-size:10px;color:#38321E;margin-top:24px}
+
+/* ── APP ── */
+#app{display:none}
+.app{max-width:980px;margin:0 auto;padding-bottom:60px}
+.header{background:#242017;border-bottom:2px solid var(--gold);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold);letter-spacing:3px;text-transform:uppercase}
+.logo-sub{font-size:9px;color:var(--cream3);letter-spacing:3px;text-transform:uppercase;margin-top:1px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.user-pill{background:#2E2A1E;border:1px solid #38321E;border-radius:20px;padding:4px 12px;font-size:11px;color:var(--cream3)}
+.user-pill span{color:var(--gold);font-weight:500}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#38321E;flex-shrink:0}
+.sync-dot.live{background:var(--green)}.sync-dot.saving{background:var(--gold)}.sync-dot.error{background:var(--red)}
+.sync-txt{font-size:10px;color:var(--cream3)}
+.logout-btn{padding:4px 10px;font-size:10px;border:1px solid #38321E;border-radius:3px;background:transparent;color:var(--cream3);cursor:pointer;letter-spacing:1px;text-transform:uppercase}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.tabs{display:flex;background:#242017;border-bottom:1px solid #38321E;overflow-x:auto}
+.tabs::-webkit-scrollbar{height:2px}.tabs::-webkit-scrollbar-thumb{background:var(--gold-dim)}
+.tab{flex:1;min-width:75px;padding:12px 4px;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;border:none;background:none;color:var(--cream3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:'Jost',sans-serif}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab:hover:not(.active){color:var(--cream)}
+.content{padding:16px 20px}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:11px;margin-bottom:14px}
+.metric{background:#242017;border:1px solid #38321E;border-radius:8px;padding:13px;border-top:2px solid var(--gold)}
+.metric-label{font-size:9px;color:var(--cream3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.metric-val{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--gold)}
+.metric-sub{font-size:11px;color:var(--cream3);margin-top:2px}
+.card{background:#242017;border:1px solid #38321E;border-radius:8px;padding:15px;margin-bottom:12px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.card-title{font-size:10px;font-weight:500;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase}
+table{width:100%;font-size:12px;border-collapse:collapse;table-layout:fixed}
+th{text-align:left;color:var(--cream3);font-weight:400;padding:6px 7px;border-bottom:1px solid #38321E;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+td{padding:8px 7px;border-bottom:1px solid #2E2A1E;color:var(--cream);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.b-occ{background:#1a2a1a;color:var(--green);border:1px solid #2a4a2a}
+.b-vac{background:#1a1a24;color:var(--gold);border:1px solid #2a2a3a}
+.b-maint{background:#2a1a1a;color:var(--red);border:1px solid #4a2a2a}
+.b-ok{background:#1a2a1a;color:var(--green);border:1px solid #2a4a2a}
+.b-low{background:#2a2210;color:var(--gold-light);border:1px solid #4a3820}
+.b-out{background:#2a1a1a;color:var(--red);border:1px solid #4a2a2a}
+.btn{padding:7px 14px;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;border:1px solid var(--gold-dim);border-radius:3px;background:transparent;color:var(--gold);cursor:pointer;transition:all .15s;font-family:'Jost',sans-serif}
+.btn:hover{background:#38321E}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-gold{background:var(--gold);color:#1A1710;border-color:var(--gold)}.btn-gold:hover{background:var(--gold-light)}
+.btn-sm{padding:3px 9px;font-size:10px}
+.btn-danger{border-color:#4a2a2a;color:var(--red)}.btn-danger:hover{background:#2a1a1a}
+.room-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+.room-card{border:1px solid #38321E;border-radius:6px;padding:11px 7px;text-align:center;cursor:pointer;transition:all .2s;background:#2E2A1E}
+.room-card:hover{border-color:var(--gold-dim);transform:translateY(-1px)}
+.room-card.occupied{border-color:#2a4a2a;background:#1a2a1a}
+.room-card.vacant{border-color:var(--gold-dim);background:#242017}
+.room-card.maintenance{border-color:#4a2a2a;background:#2a1a1a}
+.room-num{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold)}
+.room-type{font-size:9px;color:var(--cream3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.room-guest{font-size:10px;color:var(--cream2);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.room-dot{width:6px;height:6px;border-radius:50%;margin:4px auto 0}
+.room-dot.occupied{background:var(--green)}.room-dot.vacant{background:var(--gold)}.room-dot.maintenance{background:var(--red)}
+input,select{font-size:13px;padding:9px 11px;width:100%;border:1px solid #38321E;border-radius:4px;background:#1A1710;color:var(--cream);font-family:'Jost',sans-serif;transition:border-color .15s}
+input:focus,select:focus{outline:none;border-color:var(--gold-dim)}
+select option{background:#1A1710}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:10px;color:var(--cream3);letter-spacing:1px;text-transform:uppercase}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:500;align-items:flex-start;justify-content:center;padding:40px 14px;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:#242017;border:1px solid var(--gold-dim);border-radius:8px;padding:20px;width:100%;max-width:470px;border-top:3px solid var(--gold);margin:auto}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;color:var(--gold);margin-bottom:14px}
+.flex{display:flex;gap:8px;align-items:center}
+.progress-bar{height:3px;border-radius:2px;background:#38321E;margin-top:5px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;background:var(--gold);transition:width .4s}
+.week-wrap{display:flex;align-items:flex-end;gap:7px;height:78px;margin:9px 0}
+.week-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.week-bar{width:100%;border-radius:3px 3px 0 0;min-height:2px;background:var(--gold)}
+.week-bar.empty{background:#38321E}
+.week-lbl{font-size:9px;color:var(--cream3);text-transform:uppercase}
+.week-pct{font-size:10px;color:var(--gold)}
+.alert{padding:8px 12px;border-radius:4px;font-size:12px;margin-bottom:7px;border-left:3px solid}
+.alert-warn{background:#2a2210;color:var(--gold-light);border-color:var(--gold)}
+.alert-out{background:#2a1a1a;color:var(--red);border-color:var(--red)}
+.rev-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #2E2A1E;font-size:12px}
+.rev-row:last-child{border-bottom:none}
+.override-box{background:#1A1710;border:1px solid var(--gold-dim);border-radius:6px;padding:13px;margin:11px 0}
+.override-title{font-size:10px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.cal-month{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;color:var(--gold)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dh{text-align:center;font-size:9px;color:var(--cream3);letter-spacing:1px;text-transform:uppercase;padding:4px 0}
+.cal-day{min-height:54px;border-radius:4px;border:1px solid #2E2A1E;background:#1A1710;padding:4px;cursor:pointer;transition:border-color .15s}
+.cal-day:hover:not(.other):not(.past){border-color:var(--gold-dim)}
+.cal-day.today{border-color:var(--gold-dim);background:#242017}
+.cal-day.other{opacity:.25;pointer-events:none}
+.cal-day.past{opacity:.4;pointer-events:none}
+.cal-day.booked{border-color:#1a3a5a;background:#0d1a24}
+.cal-dn{font-size:10px;color:var(--cream3);margin-bottom:2px}
+.cal-day.today .cal-dn{color:var(--gold);font-weight:500}
+.cal-bk{font-size:9px;color:var(--blue);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4}
+.price-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #2E2A1E}
+.price-row:last-child{border-bottom:none}
+.price-val{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:var(--gold)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #38321E;border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-screen{text-align:center;padding:70px 20px}
+.loading-screen .logo-big{font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--gold);letter-spacing:4px;margin-bottom:10px}
+.role-badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-left:6px}
+.role-admin{background:#1a2a1a;color:var(--green);border:1px solid #2a4a2a}
+.role-staff{background:#1a1a2a;color:var(--blue);border:1px solid #1a3a5a}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Exodus</div>
+    <div class="login-sub">Hotel &amp; Restaurant · Lagos</div>
+    <div style="text-align:left">
+      <label class="login-label">Username</label>
+      <input class="login-input" type="text" id="l-user" placeholder="Enter username" autocomplete="username">
+      <label class="login-label">Password</label>
+      <input class="login-input" type="password" id="l-pass" placeholder="Enter password" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="l-btn">Sign in</button>
+    <div class="login-error" id="l-err"></div>
+    <div class="login-version">Exodus Hotel Management System</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="app">
+    <div class="header">
+      <div><div class="logo">Exodus</div><div class="logo-sub">Hotel &amp; Restaurant · Lagos</div></div>
+      <div class="hdr-right">
+        <div class="user-pill" id="user-pill">—</div>
+        <div class="sync-dot" id="sync-dot"></div>
+        <span class="sync-txt" id="sync-txt">Connecting...</span>
+        <button class="logout-btn" id="logout-btn">Sign out</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="sw('overview',this)">Overview</button>
+      <button class="tab" onclick="sw('rooms',this)">Rooms</button>
+      <button class="tab" onclick="sw('calendar',this)">Calendar</button>
+      <button class="tab" onclick="sw('drinks',this)">Bar</button>
+      <button class="tab" onclick="sw('food',this)">Kitchen</button>
+      <button class="tab" onclick="sw('revenue',this)">Revenue</button>
+    </div>
+    <div class="content" id="mc">
+      <div class="loading-screen"><div class="logo-big">Exodus</div><div><span class="spinner"></span>Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)cm()">
+  <div class="modal" id="modal-body" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+// ─── AUTH (inline — no server needed) ───────────────────────────
+let currentUser = null;
+
+const USERS = [
+  { username: 'admin',     password: 'exodus2024',  name: 'Administrator', role: 'admin'  },
+  { username: 'manager',   password: 'manager123',  name: 'Manager',       role: 'admin'  },
+  { username: 'staff1',    password: 'staff001',    name: 'Staff Member',  role: 'staff'  },
+  { username: 'staff2',    password: 'staff002',    name: 'Staff Member 2',role: 'staff'  },
+  { username: 'bar',       password: 'bar2024',     name: 'Bar Staff',     role: 'staff'  },
+  { username: 'reception', password: 'reception1',  name: 'Reception',     role: 'staff'  },
+];
+
+function doLogout() {
+  currentUser = null;
+  sessionStorage.removeItem('exodus_user');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('l-pass').value = '';
+  document.getElementById('l-err').textContent = '';
+}
+
+function doLogin() {
+  const username = document.getElementById('l-user').value.trim();
+  const password = document.getElementById('l-pass').value;
+  const btn = document.getElementById('l-btn');
+  const err = document.getElementById('l-err');
+  if (!username || !password) { err.textContent = 'Please enter username and password.'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in...'; err.textContent = '';
+  const user = USERS.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+  if (!user) {
+    err.textContent = 'Invalid username or password.';
+    btn.disabled = false; btn.textContent = 'Sign in'; return;
+  }
+  currentUser = user;
+  sessionStorage.setItem('exodus_user', JSON.stringify(user));
+  showApp();
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  const pill = document.getElementById('user-pill');
+  pill.innerHTML = '<span>'+(currentUser.name)+'</span> <span class="role-badge '+(currentUser.role==='admin'?'role-admin':'role-staff')+'">'+(currentUser.role)+'</span>';
+  // Wire logout now that the button is visible
+  const loBtn = document.getElementById('logout-btn');
+  if (loBtn) { loBtn.onclick = doLogout; }
+  loadAll();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Wire login button - use both onclick and addEventListener for maximum compatibility
+  const loginBtn = document.getElementById('l-btn');
+  if (loginBtn) { loginBtn.onclick = doLogin; loginBtn.addEventListener('click', doLogin); }
+  const userInput = document.getElementById('l-user');
+  if (userInput) userInput.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  const passInput = document.getElementById('l-pass');
+  if (passInput) passInput.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  // Check saved session
+  try {
+    const saved = sessionStorage.getItem('exodus_user');
+    if (saved) { currentUser = JSON.parse(saved); showApp(); }
+  } catch(e) {}
+});
+
+// ─── SUPABASE DIRECT REST ────────────────────────────────────────
+const SURL = 'https://sdtzxnrrxfvilyrjtfcd.supabase.co/rest/v1';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkdHp4bnJyeGZ2aWx5cmp0ZmNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNTUxNDUsImV4cCI6MjA5MjYzMTE0NX0.r6m3IwQhh7j-951oMs4ownXGQs80m80NOcQOMm-BUNs';
+
+const H = () => ({'apikey':SKEY,'Authorization':'Bearer '+(SKEY),'Content-Type':'application/json','Prefer':'return=representation'});
+
+async function dbFetch(table, {method='GET', filter='', order='', limit='', select='*', body=null}={}) {
+  let url = (SURL)+'/'+(table)+'?select='+(select);
+  if (filter) url += '&'+(filter);
+  if (order)  url += '&order='+(order);
+  if (limit)  url += '&limit='+(limit);
+  const opts = { method, headers: H() };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(url, opts);
+    const text = await r.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch(e) { data = text; }
+    if (!r.ok) return { data: null, error: { message: data?.message||r.statusText, code: String(r.status) } };
+    return { data: Array.isArray(data)?data:(data?[data]:[]), error: null };
+  } catch(e) {
+    return { data: null, error: { message: e.message, code: 'network' } };
+  }
+}
+
+const sb = {
+  from: (table) => ({
+    _t:table,_f:[],_o:null,_l:null,_s:'*',_sg:false,
+    select(c='*'){this._s=c;return this;},
+    order(col,o={}){this._o=(col)+'.'+(o.ascending===false?'desc':'asc');return this;},
+    limit(n){this._l=n;return this;},
+    eq(col,val){this._f.push((col)+'=eq.'+(val));return this;},
+    single(){this._sg=true;return this;},
+    then(resolve){
+      return dbFetch(this._t,{method:'GET',select:this._s,filter:this._f.join('&'),order:this._o||'',limit:this._l||''})
+        .then(r=>{if(this._sg&&r.data)r.data=r.data[0]||null;return resolve(r);});
+    },
+    async insert(body){return dbFetch(this._t,{method:'POST',body});},
+    async update(body){return dbFetch(this._t,{method:'PATCH',filter:this._f.join('&'),body});},
+    async delete(){return dbFetch(this._t,{method:'DELETE',filter:this._f.join('&')});},
+  })
+};
+
+// ─── STATE ───────────────────────────────────────────────────────
+let D={rooms:[],pricing:{},bookings:[],drinks:[],food:[],revenue:[],occLog:[]};
+let tab='overview',cY=new Date().getFullYear(),cM=new Date().getMonth();
+const f=n=>Number(n||0).toLocaleString('en-NG');
+const tday=()=>new Date().toISOString().split('T')[0];
+const calcN=(a,b)=>(!a||!b||a>=b)?0:Math.round((new Date(b)-new Date(a))/864e5);
+const stSt=(s,m)=>s===0?'out':s<=m?'low':'ok';
+const sBdg=s=>s==='ok'?'<span class="badge b-ok">In stock</span>':s==='low'?'<span class="badge b-low">Low</span>':'<span class="badge b-out">Out</span>';
+const bkOn=ds=>D.bookings.filter(b=>b.checkin<=ds&&b.checkout>ds);
+const isAdmin=()=>currentUser?.role==='admin';
+const setSt=(m,t='idle')=>{
+  document.getElementById('sync-txt').textContent=m;
+  document.getElementById('sync-dot').className='sync-dot'+(t==='live'?' live':t==='saving'?' saving':t==='error'?' error':'');
+};
+
+// ─── LOAD ────────────────────────────────────────────────────────
+async function loadAll() {
+  setSt('Loading...','saving');
+  try {
+    const [rooms,pricing,bookings,drinks,food,revenue,occ]=await Promise.all([
+      sb.from('rooms').select('*').order('id'),
+      sb.from('room_pricing').select('*'),
+      sb.from('bookings').select('*').order('checkin'),
+      sb.from('drinks').select('*').order('id'),
+      sb.from('food').select('*').order('id'),
+      sb.from('revenue').select('*').order('date',{ascending:false}),
+      sb.from('occupancy_log').select('*').order('date'),
+    ]);
+    if(rooms.error) throw new Error(rooms.error.message);
+    D.rooms    = rooms.data    ||[];
+    D.pricing  = Object.fromEntries((pricing.data||[]).map(p=>[p.type,p]));
+    D.bookings = bookings.data ||[];
+    D.drinks   = drinks.data   ||[];
+    D.food     = food.data     ||[];
+    D.revenue  = revenue.data  ||[];
+    D.occLog   = occ.data      ||[];
+    setSt('Live ✓','live');
+    ra();
+    startPolling();
+  } catch(e) {
+    setSt('Error: '+e.message,'error');
+    document.getElementById('mc').innerHTML='<div class="loading-screen"><div class="logo-big">Exodus</div><div style="color:var(--red);font-size:13px;margin-top:8px">⚠ '+(e.message)+'</div><div style="font-size:12px;color:var(--cream3);margin-top:8px">Check your internet connection and <button onclick="loadAll()" style="color:var(--gold);background:none;border:none;cursor:pointer;font-size:12px;text-decoration:underline">try again</button></div></div>';
+  }
+}
+
+function startPolling() {
+  setInterval(async()=>{
+    try {
+      const [rooms,bookings,drinks,food,revenue,occ]=await Promise.all([
+        dbFetch('rooms',{order:'id.asc'}),
+        dbFetch('bookings',{order:'checkin.asc'}),
+        dbFetch('drinks',{order:'id.asc'}),
+        dbFetch('food',{order:'id.asc'}),
+        dbFetch('revenue',{order:'date.desc'}),
+        dbFetch('occupancy_log',{order:'date.asc'}),
+      ]);
+      if(rooms.data)    D.rooms    =rooms.data;
+      if(bookings.data) D.bookings =bookings.data;
+      if(drinks.data)   D.drinks   =drinks.data;
+      if(food.data)     D.food     =food.data;
+      if(revenue.data)  D.revenue  =revenue.data;
+      if(occ.data)      D.occLog   =occ.data;
+      setSt('Live ✓','live');
+      ra();
+    }catch(e){setSt('Sync error','error');}
+  },6000);
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────
+function sw(t,el){tab=t;cm();document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');ra();}
+function ra(){
+  const c=document.getElementById('mc');
+  if(tab==='overview')  c.innerHTML=bOv();
+  else if(tab==='rooms')    c.innerHTML=bRm();
+  else if(tab==='calendar') c.innerHTML=bCal();
+  else if(tab==='drinks')   c.innerHTML=bBar();
+  else if(tab==='food')     c.innerHTML=bKit();
+  else if(tab==='revenue')  c.innerHTML=bRev();
+}
+function om(h){document.getElementById('modal-body').innerHTML=h;document.getElementById('overlay').classList.add('open');}
+function cm(){document.getElementById('overlay').classList.remove('open');}
+
+function bWeek(){
+  const days=[],ts=tday(),dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],tot=D.rooms.length||10;
+  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0]);}
+  const data=days.map(ds=>{
+    let occ=null;
+    if(ds===ts)occ=D.rooms.filter(r=>r.status==='occupied').length;
+    else{const l=D.occLog.find(l=>l.date===ds);occ=l?l.occupied:null;}
+    return{occ,label:dn[new Date(ds+'T12:00:00').getDay()],pct:occ!==null?Math.round(occ/tot*100):null};
+  });
+  const bars=data.map(d=>'<div class="week-col"><div class="week-pct">'+(d.pct!==null?d.pct+'%':'-')+'</div><div class="week-bar'+(d.pct===null?' empty':'')+'" style="height:'+(d.pct!==null?Math.max(4,d.pct*.72):4)+'px"></div><div class="week-lbl">'+(d.label)+'</div></div>').join('');
+  const vl=data.filter(d=>d.pct!==null),avg=vl.length?Math.round(vl.reduce((s,d)=>s+d.pct,0)/vl.length):null;
+  return'<div class="card"><div class="card-header"><span class="card-title">Weekly occupancy</span><span style="font-size:11px;color:var(--cream3)">Avg: <span style="color:var(--gold)">'+(avg!==null?avg+'%':'—')+'</span></span></div><div class="week-wrap">'+(bars)+'</div></div>';
+}
+
+function bOv(){
+  const ts=tday(),occ=D.rooms.filter(r=>r.status==='occupied').length,vac=D.rooms.filter(r=>r.status==='vacant').length,tot=D.rooms.length||10,pct=Math.round(occ/tot*100);
+  const lowD=D.drinks.filter(d=>stSt(d.stock,d.min_level)!=='ok').length,lowF=D.food.filter(f=>stSt(f.stock,f.min_level)!=='ok').length;
+  const tr=D.revenue.find(r=>r.date===ts),tt=tr?(tr.food_revenue+tr.drinks_revenue):0;
+  const uc=D.bookings.filter(b=>b.checkin>ts).length;
+  const al=[...D.drinks.filter(d=>stSt(d.stock,d.min_level)!=='ok').map(d=>({n:d.name,s:stSt(d.stock,d.min_level),src:'Bar'})),...D.food.filter(f=>stSt(f.stock,f.min_level)!=='ok').map(f=>({n:f.name,s:stSt(f.stock,f.min_level),src:'Kitchen'}))];
+  const aH=al.length?al.map(a=>'<div class="alert '+(a.s==='out'?'alert-out':'alert-warn')+'"><strong>'+(a.src)+':</strong> '+(a.n)+' — '+(a.s==='out'?'out of stock':'below minimum')+'</div>').join(''):'<p style="font-size:12px;color:#A89870;padding:6px 0">All stock levels good ✓</p>';
+  const rm=D.rooms.map(r=>'<div class="room-card '+(r.status)+'" onclick="oRM('+(r.id)+')"><div class="room-num">'+(r.num)+'</div><div class="room-type">'+(r.type)+'</div><div class="room-guest">'+(r.guest||(r.status==='maintenance'?'Maintenance':'Available'))+'</div><div class="room-dot '+(r.status)+'"></div></div>').join('');
+  return'<div class="metric-grid">     <div class="metric"><div class="metric-label">Occupied</div><div class="metric-val">'+(occ)+'<span style="font-family:\'Jost\',sans-serif;font-size:14px;color:var(--cream3)">/'+(tot)+'</span></div><div class="progress-bar"><div class="progress-fill" style="width:'+(pct)+'%"></div></div><div class="metric-sub">'+(pct)+'% occupancy</div></div>     <div class="metric"><div class="metric-label">Vacant</div><div class="metric-val" style="color:var(--green)">'+(vac)+'</div><div class="metric-sub">Available now</div></div>     <div class="metric"><div class="metric-label">Alerts</div><div class="metric-val" style="color:'+(lowD+lowF>0?'var(--gold-light)':'var(--green)')+'">'+(lowD+lowF)+'</div><div class="metric-sub">'+(lowD)+' bar · '+(lowF)+' kitchen</div></div>     <div class="metric"><div class="metric-label">Upcoming</div><div class="metric-val" style="color:var(--blue)">'+(uc)+'</div><div class="metric-sub">Bookings</div></div>     <div class="metric"><div class="metric-label">Today revenue</div><div class="metric-val" style="font-size:17px">₦'+(f(tt))+'</div><div class="metric-sub">'+(tr?'Logged':'Not logged')+'</div></div>   </div>'+(bWeek())+'   <div class="card"><div class="card-header"><span class="card-title">Stock alerts</span></div>'+(aH)+'</div>   <div class="card"><div class="card-header"><span class="card-title">Room snapshot</span></div><div class="room-grid">'+(rm)+'</div></div>';
+}
+
+function bRm(){
+  const grid=D.rooms.map(r=>'<div class="room-card '+(r.status)+'" onclick="oRM('+(r.id)+')"><div class="room-num">'+(r.num)+'</div><div class="room-type">'+(r.type)+'</div><div class="room-guest">'+(r.guest||(r.status==='maintenance'?'Maintenance':'Available'))+'</div><div class="room-dot '+(r.status)+'"></div></div>').join('');
+  const occ=D.rooms.filter(r=>r.status==='occupied');
+  const lr=occ.length?occ.map(r=>{const n=calcN(r.checkin,r.checkout),rt=D.pricing[r.type]?.per_night||0;return'<tr><td style="width:50px">Rm '+(r.num)+'</td><td>'+(r.guest)+'</td><td style="width:90px">'+(r.checkin||'')+'</td><td style="width:90px">'+(r.checkout||'')+'</td><td style="width:45px;color:var(--cream3)">'+(n)+'n</td><td style="width:100px;color:var(--gold)">₦'+(f(n*rt))+'</td><td style="width:80px"><button class="btn btn-sm btn-danger" onclick="chkOut('+(r.id)+')">Check out</button></td></tr>';}).join(''):'<tr><td colspan="7" style="text-align:center;color:#A89870;padding:16px">No guests checked in</td></tr>';
+  const pr=Object.entries(D.pricing).map(([t,p])=>'<div class="price-row"><div><div style="font-size:13px;font-weight:500">'+(t)+'</div><div style="font-size:11px;color:var(--cream3)">'+(p.description||'')+'</div></div><div class="price-val">₦'+(f(p.per_night))+'<span style="font-family:\'Jost\',sans-serif;font-size:11px;color:var(--cream3)">/night</span></div></div>').join('');
+  return'<div class="card"><div class="card-header"><span class="card-title">All rooms</span><button class="btn btn-gold btn-sm" onclick="oRM(null)">+ Check in</button></div><div class="room-grid">'+(grid)+'</div></div>   <div class="card"><div class="card-header"><span class="card-title">Room pricing</span>'+(isAdmin()?'<button class="btn btn-sm" onclick="oPrM()">Edit prices</button>':'')+'</div>'+(pr)+'</div>   '+(bWeek())+'   <div class="card"><div class="card-header"><span class="card-title">Guest log</span></div><div style="overflow-x:auto"><table><thead><tr><th>Room</th><th>Guest</th><th>Check-in</th><th>Check-out</th><th>Nights</th><th>Value</th><th></th></tr></thead><tbody>'+(lr)+'</tbody></table></div></div>';
+}
+
+function bCal(){
+  const mn=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const ts=tday(),first=new Date(cY,cM,1),last=new Date(cY,cM+1,0),dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let cells=dn.map(d=>'<div class="cal-dh">'+d+'</div>').join('');
+  for(let i=0;i<first.getDay();i++){const d=new Date(cY,cM,1-first.getDay()+i);cells+='<div class="cal-day other"><div class="cal-dn">'+d.getDate()+'</div></div>';}
+  for(let day=1;day<=last.getDate();day++){
+    const ds=cY+'-'+String(cM+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    const bks=bkOn(ds),isT=ds===ts,isP=ds<ts;
+    const cls='cal-day'+(isT?' today':'')+(bks.length?' booked':'')+(isP?' past':'');
+    const oc=isP?'':('oCD(\''+ds+'\')');
+    const dots=bks.slice(0,3).map(b=>'<div class="cal-bk">Rm'+b.room_num+' '+b.guest.split(' ')[0]+'</div>').join('')+(bks.length>3?'<div class="cal-bk">+'+(bks.length-3)+'</div>':'');
+    cells+='<div class="'+cls+'"'+(oc?' onclick="'+oc+'"':'')+'>'+
+           '<div class="cal-dn">'+day+'</div>'+dots+'</div>';
+  }
+  const rem=(7-(first.getDay()+last.getDate())%7)%7;
+  for(let i=1;i<=rem;i++)cells+='<div class="cal-day other"><div class="cal-dn">'+i+'</div></div>';
+  const upcoming=D.bookings.filter(b=>b.checkin>=ts).sort((a,b)=>a.checkin.localeCompare(b.checkin)).slice(0,10);
+  const ur=upcoming.length?upcoming.map(b=>{const n=calcN(b.checkin,b.checkout),base=D.pricing[b.room_type]?.per_night||0,rate=b.custom_price!=null?b.custom_price:base,isC=b.custom_price!=null;return'<tr><td style="width:55px">Rm '+(b.room_num)+'</td><td>'+(b.guest)+'</td><td style="width:88px">'+(b.checkin)+'</td><td style="width:88px">'+(b.checkout)+'</td><td style="width:45px;color:var(--cream3)">'+(n)+'n</td><td style="width:110px;color:var(--gold)">₦'+(f(rate*n))+(isC?'<span style="font-size:9px;color:var(--blue)"> ✦</span>':'')+'</td><td style="width:30px;text-align:right"><button class="btn btn-sm btn-danger" onclick="rmBk('+(b.id)+')" style="padding:2px 6px">✕</button></td></tr>';}).join(''):'<tr><td colspan="7" style="text-align:center;color:#A89870;padding:16px">No upcoming bookings</td></tr>';
+  const pr=Object.entries(D.pricing).map(([t,p])=>'<div class="price-row"><div><div style="font-size:13px;font-weight:500">'+(t)+'</div><div style="font-size:11px;color:var(--cream3)">'+(p.description||'')+'</div></div><div class="price-val">₦'+(f(p.per_night))+'<span style="font-family:\'Jost\',sans-serif;font-size:11px;color:var(--cream3)">/night</span></div></div>').join('');
+  return'<div class="card"><div class="cal-nav"><button class="btn btn-sm" onclick="calNav(-1)">&#8592;</button><span class="cal-month">'+(mn[cM])+(cY)+'</span><button class="btn btn-sm" onclick="calNav(1)">&#8594;</button></div><div class="cal-grid">'+(cells)+'</div><div style="display:flex;gap:14px;margin-top:9px;font-size:10px;color:var(--cream3)"><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#0d1a24;border:1px solid var(--blue);margin-right:4px"></span>Booking</span><span>✦ = custom price</span><span>Click a future date to view/add</span></div></div>   <div class="card"><div class="card-header"><span class="card-title">Upcoming bookings</span><button class="btn btn-gold btn-sm" onclick="oBkM(null)">+ New booking</button></div><div style="overflow-x:auto"><table><thead><tr><th>Room</th><th>Guest</th><th>Check-in</th><th>Check-out</th><th>Nights</th><th>Total</th><th></th></tr></thead><tbody>'+(ur)+'</tbody></table></div></div>   <div class="card"><div class="card-header"><span class="card-title">Room pricing</span>'+(isAdmin()?'<button class="btn btn-sm" onclick="oPrM()">Edit</button>':'')+'</div>'+(pr)+'</div>';
+}
+
+function bBar(){
+  const tw=D.drinks.reduce((s,i)=>s+(i.wholesale_price||0)*i.stock,0),tr=D.drinks.reduce((s,i)=>s+(i.retail_price||0)*i.stock,0);
+  const rows=D.drinks.map(i=>{const s=stSt(i.stock,i.min_level),m=i.wholesale_price>0?Math.round((i.retail_price-i.wholesale_price)/i.wholesale_price*100):0;return'<tr><td style="width:24%">'+(i.name)+'</td><td style="width:10%;color:var(--cream3)">'+(i.category)+'</td><td style="width:100px"><div style="display:flex;align-items:center;gap:5px"><button class="btn btn-sm" style="padding:2px 8px;font-size:13px" onclick="adjDrink('+(i.id)+',-1)">−</button><span style="min-width:24px;text-align:center;font-weight:500;color:'+(s==='out'?'var(--red)':s==='low'?'var(--gold-light)':'var(--cream)')+'">'+(i.stock)+'</span><button class="btn btn-sm" style="padding:2px 8px;font-size:13px" onclick="adjDrink('+(i.id)+',1)">+</button></div></td><td style="width:9%;color:var(--cream3)">'+(i.unit)+'</td><td style="width:12%;color:var(--cream3)">₦'+(f(i.wholesale_price||0))+'</td><td style="width:12%;color:var(--gold)">₦'+(f(i.retail_price||0))+'</td><td style="width:7%;color:var(--green)">'+(m)+'%</td><td style="width:65px">'+(sBdg(s))+'</td><td style="width:30px;text-align:right"><button class="btn btn-sm btn-danger" onclick="rmDrink('+(i.id)+')" style="padding:2px 6px">✕</button></td></tr>';}).join('');
+  return'<div class="metric-grid"><div class="metric"><div class="metric-label">Stock cost</div><div class="metric-val" style="font-size:17px">₦'+(f(tw))+'</div><div class="metric-sub">Wholesale value</div></div><div class="metric"><div class="metric-label">Retail value</div><div class="metric-val" style="font-size:17px">₦'+(f(tr))+'</div></div><div class="metric"><div class="metric-label">Potential profit</div><div class="metric-val" style="font-size:17px;color:var(--green)">₦'+(f(tr-tw))+'</div></div></div>   <div class="card"><div class="card-header"><span class="card-title">Bar inventory &amp; pricing</span><button class="btn btn-gold btn-sm" onclick="oAddDrink()">+ Add item</button></div><div style="overflow-x:auto"><table><thead><tr><th>Item</th><th>Cat</th><th>Stock</th><th>Unit</th><th>Wholesale</th><th>Retail</th><th>Margin</th><th>Status</th><th></th></tr></thead><tbody>'+(rows)+'</tbody></table></div></div>';
+}
+
+function bKit(){
+  const rows=D.food.map(i=>{const s=stSt(i.stock,i.min_level);return'<tr><td style="width:35%">'+(i.name)+'</td><td style="width:15%;color:var(--cream3)">'+(i.category)+'</td><td style="width:110px"><div style="display:flex;align-items:center;gap:5px"><button class="btn btn-sm" style="padding:2px 8px;font-size:13px" onclick="adjFood('+(i.id)+',-1)">−</button><span style="min-width:24px;text-align:center;font-weight:500;color:'+(s==='out'?'var(--red)':s==='low'?'var(--gold-light)':'var(--cream)')+'">'+(i.stock)+'</span><button class="btn btn-sm" style="padding:2px 8px;font-size:13px" onclick="adjFood('+(i.id)+',1)">+</button></div></td><td style="width:55px;color:var(--cream3)">'+(i.unit)+'</td><td style="width:55px;color:var(--cream3)">'+(i.min_level)+'</td><td style="width:80px">'+(sBdg(s))+'</td><td style="width:30px;text-align:right"><button class="btn btn-sm btn-danger" onclick="rmFood('+(i.id)+')" style="padding:2px 6px">✕</button></td></tr>';}).join('');
+  return'<div class="card"><div class="card-header"><span class="card-title">Kitchen inventory</span><button class="btn btn-gold btn-sm" onclick="oAddFood()">+ Add item</button></div><div style="overflow-x:auto"><table><thead><tr><th>Item</th><th>Cat</th><th>Stock</th><th>Unit</th><th>Min</th><th>Status</th><th></th></tr></thead><tbody>'+(rows)+'</tbody></table></div></div>';
+}
+
+function bRev(){
+  const l14=[...D.revenue].slice(0,14);
+  const tf=l14.reduce((s,r)=>s+(r.food_revenue||0),0),td=l14.reduce((s,r)=>s+(r.drinks_revenue||0),0);
+  const rows=l14.length?l14.map(r=>{
+    const dateLabel=new Date(r.date+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    return '<div class="rev-row"><span style="color:var(--cream3)">'+dateLabel+'</span>'+
+      '<div style="display:flex;gap:14px">'+
+      '<span style="color:var(--green)">&#8358;'+f(r.food_revenue)+'</span>'+
+      '<span style="color:var(--gold)">&#8358;'+f(r.drinks_revenue)+'</span>'+
+      '<span style="font-weight:500">&#8358;'+f((r.food_revenue||0)+(r.drinks_revenue||0))+'</span>'+
+      '</div></div>';
+  }).join(''):'<p style="font-size:12px;color:#A89870;padding:8px 0">No revenue logged yet.</p>';
+  return '<div class="metric-grid">'+
+    '<div class="metric"><div class="metric-label">Food (14 days)</div><div class="metric-val" style="font-size:17px;color:var(--green)">&#8358;'+f(tf)+'</div></div>'+
+    '<div class="metric"><div class="metric-label">Drinks (14 days)</div><div class="metric-val" style="font-size:17px">&#8358;'+f(td)+'</div></div>'+
+    '<div class="metric"><div class="metric-label">Total (14 days)</div><div class="metric-val" style="font-size:17px">&#8358;'+f(tf+td)+'</div></div></div>'+
+    '<div class="card"><div class="card-header"><span class="card-title">Daily revenue log</span>'+
+    '<div class="flex"><span style="font-size:10px;color:var(--cream3)"><span style="color:var(--green)">&#9632;</span> food &nbsp;<span style="color:var(--gold)">&#9632;</span> drinks</span>'+
+    '<button class="btn btn-gold btn-sm" onclick="oRevM()">+ Log today</button></div></div>'+rows+'</div>';
+}
+
+// ─── MODALS ──────────────────────────────────────────────────────
+function oRM(id){
+  var r=id?D.rooms.find(function(x){return x.id===id;}):null;
+  var pr=r&&D.pricing[r.type]?D.pricing[r.type].per_night:0;
+  var rOpts=!r?D.rooms.filter(function(x){return x.status==='vacant';}).map(function(x){
+    return '<option value="'+x.id+'">Room '+x.num+' - '+x.type+' (&#8358;'+f(D.pricing[x.type]?D.pricing[x.type].per_night:0)+'/night)</option>';
+  }).join(''):'';
+  var h='<div class="modal-title">'+(r?'Room '+r.num+' - '+r.type:'Check in guest')+'</div>';
+  if(r) h+='<p style="font-size:12px;color:var(--cream3);margin-bottom:12px">Base rate: <span style="color:var(--gold)">&#8358;'+f(pr)+'/night</span></p>';
+  if(!r) h+='<div class="form-group" style="margin-bottom:12px"><label class="form-label">Select room</label><select id="rrs">'+(rOpts||'<option>No vacant rooms</option>')+'</select></div>';
+  h+='<div class="form-grid">'+
+    '<div class="form-group"><label class="form-label">Status</label><select id="rst">'+
+    '<option value="occupied"'+(r&&r.status==="occupied"?' selected':'')+'>Occupied</option>'+
+    '<option value="vacant"'+(r&&r.status==="vacant"?' selected':'')+'>Vacant</option>'+
+    '<option value="maintenance"'+(r&&r.status==="maintenance"?' selected':'')+'>Maintenance</option></select></div>'+
+    '<div class="form-group"><label class="form-label">Room type</label><select id="rtp">'+
+    '<option'+(r&&r.type==="Standard"?' selected':'')+'>Standard</option>'+
+    '<option'+(r&&r.type==="Deluxe"?' selected':'')+'>Deluxe</option>'+
+    '<option'+(r&&r.type==="Suite"?' selected':'')+'>Suite</option></select></div>'+
+    '<div class="form-group" style="grid-column:1/-1"><label class="form-label">Guest name</label>'+
+    '<input type="text" id="rg" value="'+(r?r.guest||'':'')+'" placeholder="Full name"></div>'+
+    '<div class="form-group"><label class="form-label">Check-in</label>'+
+    '<input type="date" id="rci" value="'+(r&&r.checkin?r.checkin:'')+'"></div>'+
+    '<div class="form-group"><label class="form-label">Check-out</label>'+
+    '<input type="date" id="rco" value="'+(r&&r.checkout?r.checkout:'')+'"></div></div>'+
+    '<div class="flex" style="margin-top:14px;justify-content:flex-end">'+
+    '<button class="btn" onclick="cm()">Cancel</button>'+
+    '<button class="btn btn-gold" id="rm-sv" onclick="svRM('+(id?id:'null')+')">Save</button></div>';
+  om(h);
+}
+
+function oBkM(prefill){
+  var ts=tday();
+  var rOpts=D.rooms.map(function(r){
+    var base=D.pricing[r.type]?D.pricing[r.type].per_night:0;
+    return '<option value="'+r.id+'" data-type="'+r.type+'" data-num="'+r.num+'" data-base="'+base+'">Room '+r.num+' - '+r.type+' (&#8358;'+f(base)+'/night)</option>';
+  }).join('');
+  var h='<div class="modal-title">New booking</div>'+
+    '<div class="form-grid">'+
+    '<div class="form-group" style="grid-column:1/-1"><label class="form-label">Guest name</label><input type="text" id="bg" placeholder="Full name"></div>'+
+    '<div class="form-group" style="grid-column:1/-1"><label class="form-label">Room</label><select id="br" onchange="upPP()">'+rOpts+'</select></div>'+
+    '<div class="form-group"><label class="form-label">Check-in</label><input type="date" id="bci" value="'+(prefill||ts)+'" onchange="upPP()"></div>'+
+    '<div class="form-group"><label class="form-label">Check-out</label><input type="date" id="bco" onchange="upPP()"></div>'+
+    '<div class="form-group"><label class="form-label">Phone</label><input type="text" id="bph" placeholder="08012345678"></div>'+
+    '<div class="form-group"><label class="form-label">Notes</label><input type="text" id="bnt" placeholder="Special requests..."></div></div>'+
+    '<div class="override-box"><div class="override-title">Pricing - manual override</div>'+
+    '<div id="pp" style="font-size:12px;color:var(--cream3);margin-bottom:9px">Select room and dates to preview</div>'+
+    '<div class="form-group"><label class="form-label">Custom price/night (&#8358;) - blank for base rate</label>'+
+    '<input type="number" id="bcp" placeholder="e.g. 35000" min="0" oninput="upPP()"></div>'+
+    '<div id="pt" style="font-size:12px;color:var(--cream3);margin-top:7px"></div></div>'+
+    '<div class="flex" style="margin-top:14px;justify-content:flex-end">'+
+    '<button class="btn" onclick="cm()">Cancel</button>'+
+    '<button class="btn btn-gold" id="bk-sv" onclick="svBk()">Save booking</button></div>';
+  om(h);
+}
+
+function oCD(ds){
+  var bks=bkOn(ds);
+  var label=new Date(ds+'T12:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  var list=bks.length?bks.map(function(b){
+    var n=calcN(b.checkin,b.checkout);
+    var base=D.pricing[b.room_type]?D.pricing[b.room_type].per_night:0;
+    var rate=b.custom_price!=null?b.custom_price:base;
+    var isC=b.custom_price!=null;
+    return '<div style="background:#1A1710;border:1px solid #38321E;border-radius:6px;padding:11px;margin-bottom:9px">'+
+      '<div style="display:flex;justify-content:space-between">'+
+      '<span style="font-size:13px;font-weight:500">Room '+b.room_num+' - '+b.guest+'</span>'+
+      '<button class="btn btn-sm btn-danger" onclick="rmBk('+b.id+')">X</button></div>'+
+      '<div style="font-size:11px;color:var(--cream3);margin-top:4px">'+b.checkin+' to '+b.checkout+' - '+n+' night'+(n!==1?'s':'')+'</div>'+
+      '<div style="font-size:11px;color:var(--gold);margin-top:3px">&#8358;'+f(rate)+'/night'+(isC?' (custom)':'')+' - Total: &#8358;'+f(rate*n)+'</div>'+
+      (b.phone?'<div style="font-size:11px;color:var(--cream3)">Tel: '+b.phone+'</div>':'')+
+      (b.notes?'<div style="font-size:11px;color:var(--cream3)">Note: '+b.notes+'</div>':'')+
+      '</div>';
+  }).join(''):'<p style="font-size:12px;color:#A89870;margin-bottom:12px">No bookings on this date.</p>';
+  om('<div class="modal-title">'+label+'</div>'+list+
+    '<div class="flex" style="margin-top:12px;justify-content:space-between">'+
+    '<button class="btn btn-gold" onclick="cm();setTimeout(function(){oBkM('+JSON.stringify(ds)+');},80)">+ Add booking</button>'+
+    '<button class="btn" onclick="cm()">Close</button></div>');
+}
+
+function oPrM(){
+  if(!isAdmin()){alert('Only admins can edit pricing.');return;}
+  var fields=Object.keys(D.pricing).map(function(t){
+    var p=D.pricing[t];
+    return '<div style="margin-bottom:13px">'+
+      '<div style="font-size:10px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px">'+t+'</div>'+
+      '<div class="form-grid" style="margin:0">'+
+      '<div class="form-group"><label class="form-label">Price/night (&#8358;)</label>'+
+      '<input type="number" id="pr-'+t+'" value="'+p.per_night+'" min="0"></div>'+
+      '<div class="form-group"><label class="form-label">Description</label>'+
+      '<input type="text" id="dsc-'+t+'" value="'+(p.description||'')+'"></div>'+
+      '</div></div>';
+  }).join('');
+  om('<div class="modal-title">Edit room pricing</div>'+fields+
+    '<div class="flex" style="margin-top:14px;justify-content:flex-end">'+
+    '<button class="btn" onclick="cm()">Cancel</button>'+
+    '<button class="btn btn-gold" id="pr-sv" onclick="svPr()">Save prices</button></div>');
+}
+
+function oAddDrink(){
+  om('<div class="modal-title">Add bar item</div>'+
+    '<div class="form-grid">'+
+    '<div class="form-group" style="grid-column:1/-1"><label class="form-label">Name</label><input type="text" id="in" placeholder="Hennessy VS"></div>'+
+    '<div class="form-group"><label class="form-label">Category</label><input type="text" id="ic" placeholder="Spirits"></div>'+
+    '<div class="form-group"><label class="form-label">Unit</label><input type="text" id="iu" placeholder="Bottle"></div>'+
+    '<div class="form-group"><label class="form-label">Current stock</label><input type="number" id="is" value="0" min="0"></div>'+
+    '<div class="form-group"><label class="form-label">Minimum level</label><input type="number" id="im" value="5" min="0"></div>'+
+    '<div class="form-group"><label class="form-label">Wholesale (&#8358;)</label><input type="number" id="iw" value="0" min="0"></div>'+
+    '<div class="form-group"><label class="form-label">Retail (&#8358;)</label><input type="number" id="ir" value="0" min="0"></div></div>'+
+    '<div class="flex" style="margin-top:14px;justify-content:flex-end">'+
+    '<button class="btn" onclick="cm()">Cancel</button>'+
+    '<button class="btn btn-gold" id="dr-sv" onclick="svDrink()">Add item</button></div>');
+}
+
+function oAddFood(){
+  om('<div class="modal-title">Add food item</div>'+
+    '<div class="form-grid">'+
+    '<div class="form-group" style="grid-column:1/-1"><label class="form-label">Name</label><input type="text" id="in" placeholder="Plantain"></div>'+
+    '<div class="form-group"><label class="form-label">Category</label><input type="text" id="ic" placeholder="Produce"></div>'+
+    '<div class="form-group"><label class="form-label">Unit</label><input type="text" id="iu" placeholder="kg"></div>'+
+    '<div class="form-group"><label class="form-label">Current stock</label><input type="number" id="is" value="0" min="0"></div>'+
+    '<div class="form-group"><label class="form-label">Minimum level</label><input type="number" id="im" value="5" min="0"></div></div>'+
+    '<div class="flex" style="margin-top:14px;justify-content:flex-end">'+
+    '<button class="btn" onclick="cm()">Cancel</button>'+
+    '<button class="btn btn-gold" id="fd-sv" onclick="svFood()">Add item</button></div>');
+}
+
+function oRevM(){
+  var ts=tday();
+  var ex=D.revenue.find(function(r){return r.date===ts;})||{food_revenue:0,drinks_revenue:0};
+  om('<div class="modal-title">Log daily revenue</div>'+
+    '<div class="form-grid">'+
+    '<div class="form-group" style="grid-column:1/-1"><label class="form-label">Date</label><input type="date" id="rd" value="'+ts+'"></div>'+
+    '<div class="form-group"><label class="form-label">Food revenue (&#8358;)</label><input type="number" id="rf" value="'+(ex.food_revenue||'')+'" placeholder="0" min="0"></div>'+
+    '<div class="form-group"><label class="form-label">Drinks revenue (&#8358;)</label><input type="number" id="rdr" value="'+(ex.drinks_revenue||'')+'" placeholder="0" min="0"></div></div>'+
+    '<p style="font-size:11px;color:var(--cream3);margin-bottom:12px">Same date updates existing record.</p>'+
+    '<div class="flex" style="justify-content:flex-end">'+
+    '<button class="btn" onclick="cm()">Cancel</button>'+
+    '<button class="btn btn-gold" id="rv-sv" onclick="svRev()">Submit</button></div>');
+}
+
+
+function upPP(){
+  const sel=document.getElementById('br'),ci=document.getElementById('bci')?.value,co=document.getElementById('bco')?.value,cp=document.getElementById('bcp')?.value;
+  const pp=document.getElementById('pp'),pt=document.getElementById('pt');
+  if(!sel||!pp)return;
+  const opt=sel.options[sel.selectedIndex],base=parseFloat(opt?.dataset?.base)||0,rt=opt?.dataset?.type||'',rn=opt?.dataset?.num||'';
+  const rate=cp&&parseFloat(cp)>0?parseFloat(cp):base,isC=cp&&parseFloat(cp)>0;
+  if(ci&&co&&ci<co){
+    const n=calcN(ci,co);
+    pp.innerHTML='Room '+rn+' ('+rt+') &middot; '+n+' night'+(n!==1?'s':'')+' &middot; Base: &#8358;'+f(base)+'/night';
+    pt.innerHTML='<span style="color:var(--gold);font-size:14px;font-weight:500">Total: &#8358;'+f(rate*n)+'</span>'+(isC?' <span style="color:var(--blue);font-size:11px">(custom &#8358;'+f(rate)+'/night)</span>':'');
+    pp.innerHTML='Room '+(rn)+' ('+(rt)+') · Base: ₦'+(f(base))+'/night';pt.innerHTML='';
+  }
+}
+
+function ld(id){const b=document.getElementById(id);if(b){b.disabled=true;b.innerHTML='<span class="spinner"></span>Saving...';}}
+
+// ─── DB ACTIONS ──────────────────────────────────────────────────
+async function svRM(id){
+  ld('rm-sv');setSt('Saving...','saving');
+  const st=document.getElementById('rst').value,tp=document.getElementById('rtp').value,g=document.getElementById('rg').value,ci=document.getElementById('rci').value||null,co=document.getElementById('rco').value||null;
+  if(id){await sb.from('rooms').update({status:st,type:tp,guest:g,checkin:ci,checkout:co}).eq('id',id);}
+  else{const sel=document.getElementById('rrs');if(sel&&sel.value)await sb.from('rooms').update({status:st,type:tp,guest:g,checkin:ci,checkout:co}).eq('id',parseInt(sel.value));}
+  cm();
+}
+
+async function chkOut(id){
+  setSt('Saving...','saving');
+  const ts=tday(),occ=D.rooms.filter(x=>x.status==='occupied'&&x.id!==id).length;
+  const {data:ex}=await sb.from('occupancy_log').select('id').eq('date',ts).single();
+  if(ex)await sb.from('occupancy_log').update({occupied:occ}).eq('date',ts);
+  else await sb.from('occupancy_log').insert({date:ts,occupied:occ});
+  await sb.from('rooms').update({status:'vacant',guest:'',checkin:null,checkout:null}).eq('id',id);
+}
+
+async function svBk(){
+  const g=document.getElementById('bg')?.value?.trim(),ci=document.getElementById('bci')?.value,co=document.getElementById('bco')?.value,sel=document.getElementById('br');
+  if(!g||!ci||!co){alert('Please fill in guest name, room and dates.');return;}
+  if(ci>=co){alert('Check-out must be after check-in.');return;}
+  ld('bk-sv');setSt('Saving...','saving');
+  const opt=sel.options[sel.selectedIndex],cp=document.getElementById('bcp')?.value,customPrice=cp&&parseFloat(cp)>0?parseFloat(cp):null;
+  await sb.from('bookings').insert({guest:g,checkin:ci,checkout:co,room_id:parseInt(sel.value),room_num:opt?.dataset?.num||'?',room_type:opt?.dataset?.type||'Standard',custom_price:customPrice,phone:document.getElementById('bph')?.value||'',notes:document.getElementById('bnt')?.value||''});
+  cm();
+}
+
+async function rmBk(id){setSt('Saving...','saving');await sb.from('bookings').delete().eq('id',id);cm();}
+
+async function svPr(){
+  ld('pr-sv');setSt('Saving...','saving');
+  for(const t of Object.keys(D.pricing)){
+    const p=document.getElementById('pr-'+t),d=document.getElementById('dsc-'+t);
+    if(p)await sb.from('room_pricing').update({per_night:parseFloat(p.value)||0,description:d?.value||''}).eq('type',t);
+  }
+  cm();
+}
+
+async function svDrink(){
+  const name=document.getElementById('in')?.value?.trim();if(!name)return;
+  ld('dr-sv');setSt('Saving...','saving');
+  await sb.from('drinks').insert({name,category:document.getElementById('ic').value||'Other',unit:document.getElementById('iu').value||'Bottle',stock:parseFloat(document.getElementById('is').value)||0,min_level:parseFloat(document.getElementById('im').value)||5,wholesale_price:parseFloat(document.getElementById('iw').value)||0,retail_price:parseFloat(document.getElementById('ir').value)||0});
+  cm();
+}
+
+async function svFood(){
+  const name=document.getElementById('in')?.value?.trim();if(!name)return;
+  ld('fd-sv');setSt('Saving...','saving');
+  await sb.from('food').insert({name,category:document.getElementById('ic').value||'Other',unit:document.getElementById('iu').value||'kg',stock:parseFloat(document.getElementById('is').value)||0,min_level:parseFloat(document.getElementById('im').value)||5});
+  cm();
+}
+
+async function svRev(){
+  ld('rv-sv');setSt('Saving...','saving');
+  const date=document.getElementById('rd').value,food=parseFloat(document.getElementById('rf').value)||0,drinks=parseFloat(document.getElementById('rdr').value)||0;
+  const {data:ex}=await sb.from('revenue').select('id').eq('date',date).single();
+  if(ex)await sb.from('revenue').update({food_revenue:food,drinks_revenue:drinks}).eq('date',date);
+  else await sb.from('revenue').insert({date,food_revenue:food,drinks_revenue:drinks});
+  cm();
+}
+
+async function adjDrink(id,delta){
+  const item=D.drinks.find(i=>i.id===id);if(!item)return;
+  setSt('Saving...','saving');
+  await sb.from('drinks').update({stock:Math.max(0,item.stock+delta)}).eq('id',id);
+}
+
+async function adjFood(id,delta){
+  const item=D.food.find(i=>i.id===id);if(!item)return;
+  setSt('Saving...','saving');
+  await sb.from('food').update({stock:Math.max(0,item.stock+delta)}).eq('id',id);
+}
+
+async function rmDrink(id){setSt('Saving...','saving');await sb.from('drinks').delete().eq('id',id);}
+async function rmFood(id){setSt('Saving...','saving');await sb.from('food').delete().eq('id',id);}
+function calNav(d){cM+=d;if(cM>11){cM=0;cY++;}if(cM<0){cM=11;cY--;}ra();}
+</script>
+</body>
+</html>
